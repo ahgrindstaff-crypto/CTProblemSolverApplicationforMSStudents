@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CT Problem Solver — Mr. G's Middle School CS Productions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fira+Code:wght@500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0eee8;--surface:#ffffff;--surface2:#f7f6f2;
+  --text:#1e1a14;--text2:#5a5248;--text3:#9a9080;
+  --shadow:0 2px 16px rgba(0,0,0,.10);--shadow-lg:0 8px 40px rgba(0,0,0,.14);
+  --radius:14px;--radius-sm:8px;--radius-lg:20px;
+  --decomp:#d97706;--decomp-lt:#fffbeb;--decomp-mid:#fde68a;--decomp-dk:#92400e;
+  --pattern:#2563eb;--pattern-lt:#eff6ff;--pattern-mid:#bfdbfe;--pattern-dk:#1e3a8a;
+  --abstract:#059669;--abstract-lt:#ecfdf5;--abstract-mid:#a7f3d0;--abstract-dk:#064e3b;
+  --algo:#7c3aed;--algo-lt:#f5f3ff;--algo-mid:#ddd6fe;--algo-dk:#3b0764;
+  --math:#ef4444;--math-lt:#fef2f2;
+  --ela:#8b5cf6;--ela-lt:#f5f3ff;
+  --sci:#0ea5e9;--sci-lt:#f0f9ff;
+  --ss:#f59e0b;--ss-lt:#fffbeb;
+  --cs:#10b981;--cs-lt:#ecfdf5;
+}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+.hide{display:none!important}
+.fade-in{animation:fadeIn .5s ease both}
+.slide-up{animation:slideUp .42s cubic-bezier(.22,.68,0,1.2) both}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.s1{animation-delay:.05s}.s2{animation-delay:.11s}.s3{animation-delay:.17s}
+.s4{animation-delay:.23s}.s5{animation-delay:.30s}
+
+/* ── HEADER ── */
+#app-header{background:var(--surface);border-bottom:2px solid #e8e4dc;padding:13px 22px;
+  display:flex;align-items:center;gap:13px;position:sticky;top:0;z-index:100}
+.hdr-logo{width:40px;height:40px;background:linear-gradient(135deg,#1e3a8a,#7c3aed);
+  border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-family:'Fira Code',monospace;font-size:13px;font-weight:600;color:#fff;flex-shrink:0}
+.hdr-title{font-size:15px;font-weight:900;color:var(--text)}
+.hdr-sub{font-size:11px;color:var(--text3);font-weight:600}
+.hdr-school{margin-left:auto;text-align:right}
+.hdr-name{font-size:11px;color:var(--text3);font-weight:700;letter-spacing:.3px}
+.hdr-badge{background:#1e3a8a;color:#fff;font-size:9px;font-weight:800;padding:2px 9px;
+  border-radius:20px;letter-spacing:.5px;display:inline-block;margin-top:3px}
+@media(max-width:500px){.hdr-school{display:none}}
+
+/* ── PAGES ── */
+.page{padding:26px 18px 40px;max-width:860px;margin:0 auto}
+
+/* ── WELCOME ── */
+.hero{text-align:center;padding:0 0 28px}
+.hero-icon{width:76px;height:76px;margin:0 auto 14px;
+  background:linear-gradient(135deg,#1e3a8a 0%,#7c3aed 50%,#059669 100%);
+  border-radius:22px;display:flex;align-items:center;justify-content:center;
+  font-size:34px;box-shadow:var(--shadow-lg)}
+.hero h1{font-size:26px;font-weight:900;line-height:1.25;margin-bottom:8px}
+.hero p{font-size:14px;color:var(--text2);line-height:1.75;max-width:500px;margin:0 auto 22px}
+.pillar-pills{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-bottom:26px}
+.ppill{padding:5px 13px;border-radius:20px;font-size:11px;font-weight:800;letter-spacing:.3px;border:2px solid transparent}
+.pp-d{background:var(--decomp-lt);color:var(--decomp-dk);border-color:var(--decomp-mid)}
+.pp-p{background:var(--pattern-lt);color:var(--pattern-dk);border-color:var(--pattern-mid)}
+.pp-a{background:var(--abstract-lt);color:var(--abstract-dk);border-color:var(--abstract-mid)}
+.pp-al{background:var(--algo-lt);color:var(--algo-dk);border-color:var(--algo-mid)}
+.sgrid-lbl{font-size:12px;font-weight:800;color:var(--text3);text-align:center;
+  letter-spacing:.5px;text-transform:uppercase;margin-bottom:13px}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:11px;margin-bottom:26px}
+.sc{background:var(--surface);border-radius:var(--radius);padding:19px 13px;text-align:center;
+  cursor:pointer;transition:transform .17s,box-shadow .17s,border-color .17s;
+  border:2.5px solid #e8e4dc}
+.sc:hover,.sc.sel{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.sc .si{font-size:32px;margin-bottom:7px;display:block}
+.sc .sn{font-size:13px;font-weight:800;display:block;margin-bottom:2px}
+.sc .sh{font-size:11px;color:var(--text3);font-weight:600;line-height:1.4}
+.sc-math .sn{color:var(--math)}.sc-math.sel{background:var(--math-lt);border-color:var(--math)}
+.sc-ela .sn{color:var(--ela)}.sc-ela.sel{background:var(--ela-lt);border-color:var(--ela)}
+.sc-sci .sn{color:var(--sci)}.sc-sci.sel{background:var(--sci-lt);border-color:var(--sci)}
+.sc-ss .sn{color:var(--ss)}.sc-ss.sel{background:var(--ss-lt);border-color:var(--ss)}
+.sc-cs .sn{color:var(--cs)}.sc-cs.sel{background:var(--cs-lt);border-color:var(--cs)}
+.offline-badge{background:var(--abstract-lt);border:1.5px solid var(--abstract-mid);
+  border-radius:var(--radius-sm);padding:9px 14px;font-size:12px;color:var(--abstract-dk);
+  font-weight:700;text-align:center;margin-bottom:16px}
+
+/* ── INPUT ── */
+.back-btn{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:700;
+  color:var(--text3);background:none;border:none;cursor:pointer;padding:0;margin-bottom:18px;transition:color .15s}
+.back-btn:hover{color:var(--text)}
+.ib{border-radius:var(--radius);padding:13px 16px;margin-bottom:18px;display:flex;align-items:center;gap:11px}
+.ib-icon{font-size:26px}.ib-name{font-size:17px;font-weight:900}.ib-desc{font-size:11px;font-weight:600;opacity:.75}
+.ib.math{background:var(--math-lt);color:var(--math)}.ib.ela{background:var(--ela-lt);color:var(--ela)}
+.ib.sci{background:var(--sci-lt);color:var(--sci)}.ib.ss{background:var(--ss-lt);color:var(--ss)}
+.ib.cs{background:var(--cs-lt);color:var(--cs)}
+.inp-lbl{font-size:14px;font-weight:800;margin-bottom:7px;display:block}
+.inp-sub{font-size:13px;color:var(--text2);margin-bottom:13px;line-height:1.65}
+#ptarea{width:100%;min-height:155px;background:var(--surface);border:2.5px solid #e0ddd5;
+  border-radius:var(--radius);padding:14px;font-family:'Nunito',sans-serif;font-size:15px;
+  color:var(--text);resize:vertical;outline:none;line-height:1.7;transition:border-color .2s}
+#ptarea:focus{border-color:#1e3a8a}
+#ptarea::placeholder{color:var(--text3)}
+.ccount{font-size:11px;color:var(--text3);text-align:right;margin-top:5px;font-weight:600}
+.tips{display:flex;flex-wrap:wrap;gap:6px;margin:11px 0 20px}
+.tip{background:var(--surface2);border:1.5px solid #e0ddd5;border-radius:20px;
+  padding:4px 11px;font-size:12px;color:var(--text2);font-weight:600;cursor:pointer;transition:.15s}
+.tip:hover{background:#fff;border-color:#c0bcb4}
+.sbtn{width:100%;padding:15px;background:linear-gradient(135deg,#1e3a8a,#7c3aed);color:#fff;
+  border:none;border-radius:var(--radius);font-family:'Nunito',sans-serif;font-size:16px;
+  font-weight:800;cursor:pointer;transition:opacity .2s,transform .15s;letter-spacing:.3px;
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  box-shadow:0 4px 20px rgba(124,58,237,.28)}
+.sbtn:hover{opacity:.92;transform:translateY(-1px)}.sbtn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+/* ── LOADING ── */
+#page-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:60vh;padding:40px 20px;text-align:center}
+.lb{width:78px;height:78px;background:linear-gradient(135deg,#1e3a8a,#7c3aed);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:34px;margin-bottom:22px;
+  animation:pulse 1.8s ease-in-out infinite;box-shadow:0 0 0 0 rgba(124,58,237,.4)}
+@keyframes pulse{0%{transform:scale(1);box-shadow:0 0 0 0 rgba(124,58,237,.4)}
+  50%{transform:scale(1.06);box-shadow:0 0 0 18px rgba(124,58,237,0)}
+  100%{transform:scale(1);box-shadow:0 0 0 0 rgba(124,58,237,0)}}
+.lt{font-size:21px;font-weight:900;margin-bottom:7px}
+.ls{font-size:14px;color:var(--text2);margin-bottom:26px;line-height:1.6}
+.tsteps{display:flex;flex-direction:column;gap:8px;max-width:340px;width:100%}
+.ts{background:var(--surface);border-radius:var(--radius-sm);padding:9px 13px;font-size:13px;
+  font-weight:700;color:var(--text3);display:flex;align-items:center;gap:9px;
+  border:2px solid #e8e4dc;transition:all .4s ease}
+.ts.active{color:var(--text);border-color:var(--pattern);background:var(--pattern-lt)}
+.ts.done{color:var(--abstract-dk);border-color:var(--abstract-mid);background:var(--abstract-lt)}
+.ts-dot{width:9px;height:9px;border-radius:50%;background:#e0ddd5;flex-shrink:0;transition:background .4s}
+.ts.active .ts-dot{background:var(--pattern);animation:dp 1s ease infinite}
+.ts.done .ts-dot{background:var(--abstract)}
+@keyframes dp{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* ── RESULTS ── */
+.rh{margin-bottom:22px}
+.rh-top{display:flex;align-items:flex-start;gap:11px;flex-wrap:wrap}
+.rh-chip{padding:4px 13px;border-radius:20px;font-size:12px;font-weight:800;letter-spacing:.3px;flex-shrink:0;margin-top:3px}
+.rh-lbl{font-size:10px;color:var(--text3);font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px}
+.rh-prob{background:var(--surface);border-radius:var(--radius-sm);padding:13px 15px;
+  font-size:14px;line-height:1.7;color:var(--text2);border:2px solid #e8e4dc;font-weight:600}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:18px}
+@media(max-width:580px){.pgrid{grid-template-columns:1fr}}
+
+/* Pillar card */
+.pc{background:var(--surface);border-radius:var(--radius);border:2.5px solid #e8e4dc;overflow:hidden;transition:transform .17s,box-shadow .17s}
+.pc:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.pch{padding:13px 15px 9px;display:flex;align-items:center;gap:9px}
+.pci{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.pcpn{font-size:10px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;margin-bottom:2px}
+.pctitle{font-size:14px;font-weight:900;line-height:1.2}
+.pcb{padding:0 15px 15px}
+.pcex{font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:11px;font-weight:600;font-style:italic}
+.pcsl{font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px}
+.pcsteps{display:flex;flex-direction:column;gap:5px;margin-bottom:11px}
+.pcstep{display:flex;gap:7px;font-size:13px;line-height:1.55;color:var(--text2);font-weight:600}
+.pcnum{min-width:21px;height:21px;border-radius:5px;display:flex;align-items:center;
+  justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;margin-top:1px}
+.pceg{background:var(--surface2);border-radius:var(--radius-sm);padding:9px 11px;
+  font-size:12px;line-height:1.6;color:var(--text2);border-left:4px solid;font-weight:600;font-style:italic}
+.pcel{font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-bottom:5px}
+
+.card-d .pch{background:var(--decomp-lt)}.card-d .pci{background:var(--decomp-mid);color:var(--decomp-dk)}
+.card-d .pcpn{color:var(--decomp)}.card-d .pctitle{color:var(--decomp-dk)}
+.card-d .pcsl{color:var(--decomp)}.card-d .pcnum{background:var(--decomp-mid);color:var(--decomp-dk)}
+.card-d .pcel{color:var(--decomp)}.card-d .pceg{border-color:var(--decomp)}.card-d:hover{border-color:var(--decomp)}
+
+.card-p .pch{background:var(--pattern-lt)}.card-p .pci{background:var(--pattern-mid);color:var(--pattern-dk)}
+.card-p .pcpn{color:var(--pattern)}.card-p .pctitle{color:var(--pattern-dk)}
+.card-p .pcsl{color:var(--pattern)}.card-p .pcnum{background:var(--pattern-mid);color:var(--pattern-dk)}
+.card-p .pcel{color:var(--pattern)}.card-p .pceg{border-color:var(--pattern)}.card-p:hover{border-color:var(--pattern)}
+
+.card-a .pch{background:var(--abstract-lt)}.card-a .pci{background:var(--abstract-mid);color:var(--abstract-dk)}
+.card-a .pcpn{color:var(--abstract)}.card-a .pctitle{color:var(--abstract-dk)}
+.card-a .pcsl{color:var(--abstract)}.card-a .pcnum{background:var(--abstract-mid);color:var(--abstract-dk)}
+.card-a .pcel{color:var(--abstract)}.card-a .pceg{border-color:var(--abstract)}.card-a:hover{border-color:var(--abstract)}
+
+.card-al .pch{background:var(--algo-lt)}.card-al .pci{background:var(--algo-mid);color:var(--algo-dk)}
+.card-al .pcpn{color:var(--algo)}.card-al .pctitle{color:var(--algo-dk)}
+.card-al .pcsl{color:var(--algo)}.card-al .pcnum{background:var(--algo-mid);color:var(--algo-dk)}
+.card-al .pcel{color:var(--algo)}.card-al .pceg{border-color:var(--algo)}.card-al:hover{border-color:var(--algo)}
+
+/* Solution path */
+.sp{background:linear-gradient(135deg,#1e3a8a,#312e81 50%,#7c3aed);border-radius:var(--radius-lg);
+  padding:22px;color:#fff;margin-bottom:14px;box-shadow:0 8px 32px rgba(124,58,237,.22)}
+.sp-ico{font-size:26px;margin-bottom:8px}.sp-lbl{font-size:10px;font-weight:800;letter-spacing:.7px;opacity:.65;text-transform:uppercase;margin-bottom:5px}
+.sp-title{font-size:17px;font-weight:900;margin-bottom:10px;line-height:1.3}
+.sp-text{font-size:14px;line-height:1.8;opacity:.9;font-weight:600}
+
+/* First step */
+.fs{background:var(--surface);border-radius:var(--radius);padding:18px;border:2.5px solid var(--decomp-mid);margin-bottom:18px;display:flex;gap:13px;align-items:flex-start}
+.fs-ico{width:42px;height:42px;background:linear-gradient(135deg,var(--decomp),#f59e0b);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.fs-lbl{font-size:10px;font-weight:800;letter-spacing:.5px;color:var(--decomp);text-transform:uppercase;margin-bottom:3px}
+.fs-title{font-size:14px;font-weight:900;color:var(--text);margin-bottom:3px}
+.fs-txt{font-size:13px;color:var(--text2);line-height:1.7;font-weight:600}
+
+/* Actions */
+.ract{display:flex;gap:9px;flex-wrap:wrap}
+.abtn{padding:11px 18px;border-radius:var(--radius-sm);font-family:'Nunito',sans-serif;
+  font-size:13px;font-weight:800;cursor:pointer;transition:.18s;border:2.5px solid;
+  display:flex;align-items:center;gap:6px}
+.abtn-pri{background:linear-gradient(135deg,#1e3a8a,#7c3aed);color:#fff;border-color:transparent;box-shadow:0 4px 16px rgba(124,58,237,.22)}
+.abtn-pri:hover{opacity:.9;transform:translateY(-1px)}
+.abtn-sec{background:var(--surface);color:var(--text);border-color:#e0ddd5}
+.abtn-sec:hover{background:var(--surface2);border-color:#c0bcb4}
+@media(max-width:480px){.ract{flex-direction:column}.abtn{justify-content:center}}
+
+/* History */
+.hist{background:var(--surface);border-top:2px solid #e8e4dc;padding:12px 18px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.hist-lbl{font-size:11px;font-weight:800;color:var(--text3);letter-spacing:.4px;text-transform:uppercase}
+.hchip{padding:4px 11px;border-radius:20px;background:var(--surface2);border:1.5px solid #e0ddd5;
+  font-size:11px;font-weight:700;color:var(--text2);cursor:pointer;transition:.14s;
+  max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hchip:hover{background:#fff;border-color:#c0bcb4}
+
+@media print{
+  #app-header,#history-section,.ract{display:none!important}
+  .page{padding:0}
+  body{background:#fff}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="app-header">
+  <div class="hdr-logo">CT</div>
+  <div>
+    <div class="hdr-title">CT Problem Solver</div>
+    <div class="hdr-sub">Computational Thinking for Every Subject</div>
+  </div>
+  <div class="hdr-school">
+    <div class="hdr-name">Mr. G's Middle School CS Productions</div>
+    <span class="hdr-badge">CS PRODUCTIONS</span>
+  </div>
+</header>
+
+<!-- PAGE: WELCOME -->
+<div id="page-welcome" class="page">
+  <div class="hero fade-in">
+    <div class="hero-icon">🧠</div>
+    <h1>Think Your Way Through Any Problem</h1>
+    <p>Stuck on something hard? Computational Thinking gives you four powerful tools to break down and solve any challenge — in any subject.</p>
+    <div class="pillar-pills">
+      <div class="ppill pp-d">🔀 Decomposition</div>
+      <div class="ppill pp-p">🔍 Pattern Recognition</div>
+      <div class="ppill pp-a">✂️ Abstraction</div>
+      <div class="ppill pp-al">📋 Algorithmic Thinking</div>
+    </div>
+  </div>
+  <div class="offline-badge slide-up">✅ Works completely offline — no internet connection required</div>
+  <div class="sgrid-lbl slide-up">Choose your subject to get started</div>
+  <div class="sgrid">
+    <div class="sc sc-math slide-up s1" onclick="pickSubject('math')">
+      <span class="si">📐</span>
+      <span class="sn">Math</span>
+      <span class="sh">Equations, word problems, geometry, fractions, algebra</span>
+    </div>
+    <div class="sc sc-ela slide-up s2" onclick="pickSubject('ela')">
+      <span class="si">📖</span>
+      <span class="sn">ELA</span>
+      <span class="sh">Reading, writing, essays, grammar, comprehension</span>
+    </div>
+    <div class="sc sc-sci slide-up s3" onclick="pickSubject('sci')">
+      <span class="si">🔬</span>
+      <span class="sn">Science</span>
+      <span class="sh">Concepts, lab reports, experiments, research</span>
+    </div>
+    <div class="sc sc-ss slide-up s4" onclick="pickSubject('ss')">
+      <span class="si">🌎</span>
+      <span class="sn">Social Studies</span>
+      <span class="sh">History, geography, civics, economics, research</span>
+    </div>
+    <div class="sc sc-cs slide-up s5" onclick="pickSubject('cs')">
+      <span class="si">💻</span>
+      <span class="sn">Computer Science</span>
+      <span class="sh">Coding, debugging, algorithms, data, planning</span>
+    </div>
+  </div>
+  <div id="history-section" class="hist hide">
+    <span class="hist-lbl">Recent</span>
+    <div id="hist-chips"></div>
+  </div>
+</div>
+
+<!-- PAGE: INPUT -->
+<div id="page-input" class="page hide">
+  <button class="back-btn" onclick="show('welcome')">← Back to Subjects</button>
+  <div id="ib" class="ib fade-in"></div>
+  <label class="inp-lbl" for="ptarea">Describe your difficult problem</label>
+  <p class="inp-sub">Be specific — explain what you are trying to do, what is confusing you, and where you are getting stuck. The more detail you give, the better your breakdown will be.</p>
+  <textarea id="ptarea" placeholder="Example: I don't understand how to solve two-step equations with negative numbers. When I move terms across the equals sign I keep getting the wrong answer..." oninput="onType()" maxlength="1200"></textarea>
+  <div class="ccount"><span id="cc">0</span> / 1200</div>
+  <div class="tips" id="tips-wrap"></div>
+  <button class="sbtn" id="sbtn" onclick="solve()" disabled>
+    <span id="sbtn-txt">🧠 Describe your problem to continue</span>
+  </button>
+</div>
+
+<!-- PAGE: LOADING -->
+<div id="page-loading" class="hide">
+  <div class="lb">🧠</div>
+  <div class="lt">Applying Computational Thinking...</div>
+  <div class="ls">Breaking down your problem through all four pillars right now.</div>
+  <div class="tsteps">
+    <div class="ts" id="ts1"><div class="ts-dot"></div>Breaking your problem into parts...</div>
+    <div class="ts" id="ts2"><div class="ts-dot"></div>Spotting patterns and similarities...</div>
+    <div class="ts" id="ts3"><div class="ts-dot"></div>Filtering to what matters most...</div>
+    <div class="ts" id="ts4"><div class="ts-dot"></div>Building your solution path...</div>
+  </div>
+</div>
+
+<!-- PAGE: RESULTS -->
+<div id="page-results" class="page hide">
+  <div class="rh fade-in">
+    <div class="rh-top">
+      <div id="rh-chip" class="rh-chip"></div>
+      <div style="flex:1">
+        <div class="rh-lbl">Your Problem</div>
+        <div class="rh-prob" id="rh-prob"></div>
+      </div>
+    </div>
+  </div>
+  <div class="pgrid" id="pgrid"></div>
+  <div class="sp fade-in s5" id="sp-card">
+    <div class="sp-ico">🗺️</div>
+    <div class="sp-lbl">Your Complete Solution Path</div>
+    <div class="sp-title">How all four pillars work together</div>
+    <div class="sp-text" id="sp-text"></div>
+  </div>
+  <div class="fs fade-in" id="fs-card">
+    <div class="fs-ico">🚀</div>
+    <div>
+      <div class="fs-lbl">Do This Right Now</div>
+      <div class="fs-title">Your First Step</div>
+      <div class="fs-txt" id="fs-txt"></div>
+    </div>
+  </div>
+  <div class="ract">
+    <button class="abtn abtn-pri" onclick="newProblem()">🧠 Solve Another Problem</button>
+    <button class="abtn abtn-sec" onclick="show('welcome')">📚 Change Subject</button>
+    <button class="abtn abtn-sec" onclick="window.print()">🖨️ Print This</button>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════
+   SUBJECT CONFIG
+══════════════════════════════════════════ */
+const SUBJ = {
+  math:{name:"Mathematics",icon:"📐",c:"math",desc:"Equations, geometry, fractions, word problems, algebra",
+    tips:["Multi-step word problem","Solving an equation","Working with fractions","Finding area or perimeter","Algebra and variables","Percentages and ratios","Order of operations"]},
+  ela:{name:"English Language Arts",icon:"📖",c:"ela",desc:"Reading, writing, essays, grammar, analysis",
+    tips:["Understanding a reading passage","Writing a strong paragraph","Finding the main idea","Analyzing a character","Building an argument","Grammar or sentence structure","Writing a conclusion"]},
+  sci:{name:"Science",icon:"🔬",c:"sci",desc:"Scientific concepts, lab reports, experiments",
+    tips:["Understanding a concept","Writing a lab report","Designing an experiment","Food chains and ecosystems","Cell biology","Forces and motion","The scientific method"]},
+  ss:{name:"Social Studies",icon:"🌎",c:"ss",desc:"History, geography, civics, economics, research",
+    tips:["Understanding a historical event","Comparing two time periods","A civics or government concept","An economics concept","Writing a research paper","Reading a map or chart","Primary vs secondary sources"]},
+  cs:{name:"Computer Science",icon:"💻",c:"cs",desc:"Coding, debugging, algorithms, data, planning",
+    tips:["Debugging my code","Understanding loops","Using functions","Planning a program","Working with variables","Understanding arrays","Binary and data representation"]}
+};
+
+/* ══════════════════════════════════════════
+   CT KNOWLEDGE BASE — Subject × Keyword
+══════════════════════════════════════════ */
+
+const KB = {
+
+/* ─── MATH ─────────────────────────────── */
+math:{
+  defaults:{
+    decomp:{
+      how:"Math problems almost always contain smaller sub-problems hiding inside them. Decomposition means finding those sub-problems and solving them one at a time instead of all at once.",
+      steps:["Read the problem one sentence at a time and write down what each sentence is telling you","Identify every number, unit, and unknown variable separately","Solve for each unknown one step at a time — never skip steps"],
+      example:"If a word problem says 'Maya has 3 bags with 8 apples each, and she gives away 10' — decompose it into: (1) total apples = 3 × 8, then (2) apples left = total − 10."
+    },
+    pattern:{
+      how:"Patterns in math tell you which operation or strategy to use. Recognizing the type of problem is the first step to solving it.",
+      steps:["Look at what type of math is involved: addition? multiplication? finding a missing value?","Look for relationships between numbers — are they multiplying? subtracting? growing?","Check if you have seen a similar problem before — that strategy will likely work again"],
+      example:"If you see the pattern 'total ÷ number of groups = amount per group,' you recognize it as a division problem, even if the wording is different each time."
+    },
+    abstract:{
+      how:"Abstraction in math means ignoring the story details and focusing only on the mathematical structure underneath.",
+      steps:["Re-read the problem and cross out anything that does not affect the calculation","Write down only the numbers, the operation, and what you are solving for","Convert the word problem into a math sentence or equation"],
+      example:"'A train traveling at 60 mph for 2 hours' — ignore the train. What matters: distance = speed × time = 60 × 2."
+    },
+    algo:{
+      how:"Algorithmic thinking means writing down the exact steps to solve the problem before doing any calculation, so you always know what comes next.",
+      steps:["Write out your steps BEFORE you start calculating: Step 1, Step 2, Step 3…","Do each step in order, checking your answer after each one","Always check: does my answer make sense given the original problem?"],
+      example:"For a two-step equation: Step 1: move the constant to the right side. Step 2: divide both sides by the coefficient. Step 3: check by substituting your answer back in."
+    },
+    path:"Start by decomposing the problem into individual parts and identifying what each number represents. Then use pattern recognition to determine which math operation or strategy applies. Use abstraction to strip away confusing language and write a clean math sentence. Finally, follow your algorithm step by step, checking your work at each stage.",
+    first:"Write down only the numbers and what you are looking for — strip away all the story language first."
+  },
+  keywords:{
+    equation:{ steps_d:["Identify which side has the variable (the unknown letter)","List every operation being done to the variable","Undo each operation in reverse order to isolate the variable"],eg_d:"If the equation is 3x + 5 = 20, decompose it: there are TWO operations on x — multiplication (×3) and addition (+5). Deal with +5 first, then ×3.",
+      steps_a:["Focus only on what is being done to the variable — ignore any story context","The goal is always: get the variable alone on one side","Every operation on one side must be done to the other side too"],eg_a:"In 2x − 4 = 10, forget about what x means in real life — just focus on the math relationship." },
+    fraction:{ steps_d:["Separate the numerator problem from the denominator problem","If adding/subtracting: find the common denominator as its own step","Simplify your answer as a separate final step"],eg_d:"For 1/3 + 1/4: Step 1 — find common denominator (12). Step 2 — convert both fractions. Step 3 — add numerators. Step 4 — simplify.",
+      steps_p:["Look at the denominators — are they the same or different?","Check if one denominator is a multiple of the other (easier case)","Look for patterns in how the fractions relate to each other"],eg_p:"1/2, 1/4, 1/8 — the pattern is each fraction is half the previous one. Recognizing this helps with operations." },
+    percent:{ steps_d:["Split into: (1) find the percent amount, (2) add or subtract from original","The key sub-problem: what is X% of some number?","Then apply that amount to the original"],eg_d:"For '20% discount on $45': Step 1 find 20% of 45 = 9. Step 2 subtract: 45 − 9 = $36.",
+      steps_al:["Step 1: Convert percent to decimal (÷100)","Step 2: Multiply decimal by the original number","Step 3: Add or subtract based on what the problem asks"],eg_al:"15% of 80 → 0.15 × 80 = 12. For a 15% tip: add 12 to original. For a 15% discount: subtract 12." },
+    area:{ steps_d:["Identify the shape first","Find the correct formula for that shape","Identify which measurements you are given and which you need"],eg_d:"For a composite shape (two rectangles joined), decompose into: area of rectangle 1 + area of rectangle 2.",
+      steps_al:["Step 1: Identify the shape","Step 2: Write the formula","Step 3: Substitute your measurements","Step 4: Calculate and include units"],eg_al:"Triangle area algorithm: Step 1 write A = ½bh. Step 2 plug in base and height. Step 3 multiply. Step 4 write your unit squared." }
+  }
+},
+
+/* ─── ELA ─────────────────────────────── */
+ela:{
+  defaults:{
+    decomp:{
+      how:"Reading and writing tasks look huge until you break them apart. Decomposition turns a long assignment into smaller, doable pieces you can tackle one at a time.",
+      steps:["Break the task into its individual parts: what exactly are you being asked to do?","For reading: tackle one paragraph or section at a time instead of the whole passage","For writing: plan each section (intro, body, conclusion) before writing any of them"],
+      example:"A 5-paragraph essay decomposes into: (1) hook + thesis, (2) body paragraph 1 with evidence, (3) body paragraph 2 with evidence, (4) body paragraph 3, (5) conclusion. Work on each part separately."
+    },
+    pattern:{
+      how:"In ELA, patterns help you understand how authors structure arguments, how characters develop, and how ideas connect across a text.",
+      steps:["Look for repeated words, phrases, or ideas — these signal what the author considers important","Notice the pattern of how the author builds their argument (claim → evidence → explanation)","Look for how characters react to similar events — the pattern reveals character traits"],
+      example:"If a character gets angry every time someone questions their decision, that anger pattern reveals a key character trait you can use in your analysis."
+    },
+    abstract:{
+      how:"Abstraction in ELA means finding the main idea beneath all the details, or identifying the most important evidence for your argument.",
+      steps:["Ask: what is the single most important point this passage or assignment is making?","For an essay: what is the ONE claim your entire argument rests on?","Cross out details that don't directly support your main idea or thesis"],
+      example:"A 4-page article about climate change might have dozens of facts — abstract it down to: 'Human activities are accelerating climate change, and action is needed now.' That's the core."
+    },
+    algo:{
+      how:"Writing becomes much easier when you follow a reliable step-by-step process instead of trying to write everything at once.",
+      steps:["Before writing: plan (brainstorm → outline → thesis)","While writing: intro → body paragraphs with evidence → conclusion","After writing: revise for clarity → edit for grammar → proofread for errors"],
+      example:"For a body paragraph, follow this algorithm every time: Topic sentence → Evidence (quote or example) → Explanation of how evidence supports claim → Transition."
+    },
+    path:"Decompose your reading or writing task into its individual parts and tackle each part separately. Use pattern recognition to find the author's structure or repeated ideas. Apply abstraction to identify the core message or your strongest argument. Then follow a reliable algorithmic process: plan first, draft second, revise third.",
+    first:"Write down in your own words what you are being asked to do — not the assignment description, but what the final product should look like."
+  },
+  keywords:{
+    essay:{ steps_d:["Break your essay into its three main sections: introduction, body, conclusion","Break each body paragraph into: topic sentence, evidence, explanation, transition","Create a simple outline before writing a single sentence"],eg_d:"An essay about a book theme decomposes into: thesis paragraph + 3 body paragraphs (one piece of evidence each) + conclusion.",
+      steps_al:["Step 1: Brainstorm ideas for 5 minutes — don't judge anything yet","Step 2: Choose your best 3 points and write a thesis","Step 3: Draft one paragraph at a time — complete each before moving on","Step 4: Revise for clarity, then edit for grammar"],eg_al:"Never write an essay start-to-finish without an outline. The algorithm: plan → draft → revise → edit. Skipping steps always makes it harder." },
+    evidence:{ steps_a:["Ask: does this quote or fact directly support my claim? If not, cut it","The test: could my reader understand my point without this detail?","Choose the STRONGEST piece of evidence — more evidence is not always better"],eg_a:"If your claim is 'the character is brave,' then a quote showing fear is irrelevant. Abstract down to only evidence that proves bravery.",
+      steps_p:["Look for evidence that follows the pattern: specific detail → supports claim","Check that your evidence connects to the same theme as your thesis","Look for repeated examples from multiple parts of the text — repetition strengthens your argument"],eg_p:"If courage appears in chapter 2, chapter 7, and chapter 11, that repeated pattern of evidence makes a much stronger argument than one example." },
+    reading:{ steps_d:["Break the passage into paragraphs or sections — read and summarize each one before moving on","Separate what the author SAYS (facts) from what the author THINKS (opinion or argument)","Identify: what is the question asking? What part of the passage answers it?"],eg_d:"For a reading comprehension question, decompose it: (1) What does the question ask? (2) What paragraph has the answer? (3) What exact words answer it?",
+      steps_al:["Step 1: Read the question BEFORE reading the passage","Step 2: Read the passage looking specifically for the answer","Step 3: Find evidence in the text (the answer is always there)","Step 4: Put the answer in your own words"],eg_al:"Never guess on reading comprehension. The algorithm: question first → targeted reading → find the evidence → paraphrase." }
+  }
+},
+
+/* ─── SCIENCE ─────────────────────────── */
+sci:{
+  defaults:{
+    decomp:{
+      how:"Science problems and concepts are built from smaller ideas. Decomposition helps you understand the pieces before you understand the whole.",
+      steps:["Break the concept into its individual vocabulary words and understand each one separately","For a lab: separate the setup, the procedure, the data collection, and the analysis into distinct steps","For a multi-part question: answer each part completely before moving to the next"],
+      example:"Understanding photosynthesis means first understanding: (1) what chlorophyll does, (2) what sunlight provides, (3) what CO₂ and water provide, (4) what glucose is. Each piece is a separate learning target."
+    },
+    pattern:{
+      how:"Science is full of patterns — in data, in nature, and in how systems behave. Pattern recognition helps you predict outcomes and identify relationships.",
+      steps:["Look at your data or the concept and ask: what repeats or increases/decreases consistently?","Look for cause-and-effect patterns: when X happens, Y always follows","Compare new concepts to ones you already know — similar patterns mean similar rules"],
+      example:"In an experiment about plant growth, if plants with more light consistently grow taller, the pattern is: more light → taller growth. That pattern is evidence of a relationship."
+    },
+    abstract:{
+      how:"Science concepts can be complex, but abstraction helps you focus on the essential mechanism without getting lost in technical details.",
+      steps:["Identify the single core idea of the concept you are studying","When reading a passage, separate the key scientific principle from the supporting details","For a lab report: the hypothesis and conclusion are the most important parts — everything else supports them"],
+      example:"The water cycle has many details, but the core (abstracted) idea is: water changes state (liquid → gas → liquid) and moves continuously through the environment."
+    },
+    algo:{
+      how:"Science has built-in algorithms: the scientific method, lab procedures, and data analysis all follow specific step-by-step processes.",
+      steps:["For the scientific method: Observation → Question → Hypothesis → Experiment → Data → Conclusion. Follow this every time","For a lab: read the entire procedure before starting, then follow each step exactly in order","For calculations: write the formula, substitute values, calculate, check units"],
+      example:"Every hypothesis follows this algorithm: 'If [independent variable] then [dependent variable] because [scientific reasoning].' Use this structure every time."
+    },
+    path:"Start by decomposing the concept or problem into its individual parts — vocabulary, steps, or variables. Use pattern recognition to find relationships in your data or similarities to concepts you know. Apply abstraction to identify the core scientific principle. Then follow the appropriate algorithm: the scientific method, lab procedure, or calculation steps.",
+    first:"Write down every vocabulary word related to this concept and make sure you know what each one means before trying to understand the whole concept."
+  },
+  keywords:{
+    experiment:{ steps_d:["Separate your experiment into: independent variable, dependent variable, control variables, constants","Break the procedure into individual steps you can check off one by one","Separate data collection from data analysis — do not mix them"],eg_d:"An experiment on plant growth decomposes into: What am I changing (light/water/soil)? What am I measuring? What stays the same? Each is a separate question.",
+      steps_al:["Step 1: Write a testable hypothesis (If… then… because…)","Step 2: Design a fair test (change only ONE variable)","Step 3: Collect and record data consistently","Step 4: Analyze results and write a conclusion that addresses your hypothesis"],eg_al:"A fair experiment requires changing only ONE variable. The algorithm: identify your variables → design the test → collect data → conclude." },
+    hypothesis:{ steps_al:["Step 1: Identify your independent variable (what you change)","Step 2: Identify your dependent variable (what you measure)","Step 3: Write: 'If [IV], then [DV] because [scientific reason]'"],eg_al:"Template: 'If plants receive more light, then they will grow taller, because light provides energy for photosynthesis.' Fill in this template every time.",
+      steps_a:["Focus on the relationship between two variables only","The hypothesis is a prediction, not a fact — it can be wrong","Only include information that directly relates to what you are testing"],eg_a:"Strip away everything except: what you change, what you measure, and why you predict the change. Everything else is unnecessary detail." },
+    cell:{ steps_d:["Separate plant cells from animal cells and learn the unique parts of each","Break the cell into systems: protection (membrane/wall), control (nucleus), energy (mitochondria), etc.","Learn each organelle's one job independently before learning how they work together"],eg_d:"Decompose cell study into organelles: (1) nucleus = control center, (2) mitochondria = energy, (3) cell membrane = gatekeeper. Learn each separately.",
+      steps_p:["Compare cell organelles to things in a school building — the pattern of similarities helps you remember","Look for patterns: which organelles produce something? Which control something? Which protect something?"],eg_p:"Pattern: structures that protect → cell wall (plants), cell membrane (all cells). Structures that produce energy → mitochondria. Finding these patterns organizes your knowledge." }
+  }
+},
+
+/* ─── SOCIAL STUDIES ──────────────────── */
+ss:{
+  defaults:{
+    decomp:{
+      how:"History and social studies topics are complex webs of events, people, and causes. Decomposition helps you untangle them by focusing on one thread at a time.",
+      steps:["Break historical events into: causes, key people, main events, and effects","For a research paper: create separate sections for each sub-topic before writing anything","For a comparison task: analyze each side separately first, then compare"],
+      example:"Understanding the American Revolution decomposes into: (1) causes (taxes, representation), (2) key figures (Washington, Jefferson), (3) major battles, (4) outcomes. Study each separately."
+    },
+    pattern:{
+      how:"History repeats itself. Pattern recognition lets you connect events across time periods and predict how similar situations tend to unfold.",
+      steps:["Ask: have I seen this type of event before in a different time period? What happened then?","Look for cause-and-effect patterns: what events tend to follow economic hardship? War? Political change?","Compare primary sources: do multiple sources agree? What patterns do they share?"],
+      example:"The pattern 'economic hardship → public unrest → political change' appears in the French Revolution, the Great Depression, and many other historical events."
+    },
+    abstract:{
+      how:"Social studies content includes vast amounts of detail. Abstraction means finding the essential idea that explains WHY something happened or matters.",
+      steps:["For any historical event, ask: what is the ONE most important reason this happened?","For a reading or document: what is the core argument or claim the author is making?","When studying for a test: identify the key concept behind each topic, not just the facts"],
+      example:"The Civil War had hundreds of causes, but abstracted to its core: it was fundamentally about whether slavery would continue and expand. That core idea connects all the details."
+    },
+    algo:{
+      how:"Analyzing history and writing about social studies both follow reliable step-by-step processes that produce better results when followed consistently.",
+      steps:["For document analysis: identify author → purpose → audience → historical context → claim → evidence","For essay writing: thesis first, then evidence, then analysis, then conclusion","For cause-and-effect: list all causes → group them by type → rank them by importance → connect them"],
+      example:"Analyzing any primary source follows this algorithm: Who wrote it? When? Why? Who was the audience? What do they claim? What evidence do they use? Is it reliable?"
+    },
+    path:"Break complex historical topics into causes, events, people, and effects — study each separately. Look for patterns connecting this to events you have already studied. Abstract to the single most important idea behind the topic. Then follow a systematic analysis process: context → claim → evidence → significance.",
+    first:"Write down what you already know about this topic before looking anything up — your prior knowledge is the foundation for everything new."
+  },
+  keywords:{
+    history:{ steps_d:["Separate the event into: background context, trigger event, key players, main events, short-term effects, long-term effects","Break a long time period into smaller eras and understand each era before connecting them","For each key person: what did they believe, what did they do, what was the result?"],eg_d:"Studying World War I: (1) Background tensions in Europe, (2) Trigger (assassination), (3) Alliance systems, (4) Major battles, (5) Treaty of Versailles. Each is a separate learning target.",
+      steps_p:["Look for patterns in how this conflict began — does it match the pattern of other conflicts?","Find recurring themes: nationalism, economic competition, political instability show up across many historical events","Look for patterns in how the conflict ended — do similar events end similarly?"],eg_p:"The pattern 'nationalism + competition + alliance system → large-scale war' appears in both World War I and many earlier European conflicts." },
+    government:{ steps_d:["Break the system into its separate branches or levels","For civics: separate the roles, powers, and limitations of each branch","For a process (like how a bill becomes a law): map out each step separately"],eg_d:"The US government decomposes into three branches: (1) Legislative = makes laws, (2) Executive = enforces laws, (3) Judicial = interprets laws. Each has its own job.",
+      steps_al:["Step 1: Identify which level or branch of government is involved","Step 2: Identify their powers and limitations","Step 3: Apply those rules to the specific situation in your question"],eg_al:"For any civics question: identify the branch → know their powers → apply to the scenario. This algorithm works for every check-and-balances question." },
+    research:{ steps_al:["Step 1: Identify your exact research question before searching for anything","Step 2: Find at least 3 credible sources","Step 3: Take notes organized by sub-topic, not by source","Step 4: Write from your notes, not from the sources directly"],eg_al:"The biggest research mistake: reading a source and immediately copying from it. The algorithm: read → close the source → write from memory in your own words.",
+      steps_a:["Ignore information that does not directly answer your research question","Evaluate sources: who wrote it, when, why? What is their expertise?","Focus on the evidence, not on interesting but irrelevant facts"],eg_a:"For a research paper on climate change effects: ignore history of climate science, ignore political debate — focus only on evidence of measurable effects." }
+  }
+},
+
+/* ─── COMPUTER SCIENCE ────────────────── */
+cs:{
+  defaults:{
+    decomp:{
+      how:"Decomposition is the #1 skill in computer science. Every complex program is built from small functions. Every difficult problem is solved by breaking it into smaller problems.",
+      steps:["Write down every sub-task your program or solution needs to accomplish","Build and test each sub-task one at a time — never build everything at once","If a function or task is still confusing, decompose it further into even smaller steps"],
+      example:"Building a quiz app decomposes into: (1) display a question, (2) accept user input, (3) check if answer is correct, (4) keep score, (5) show final result. Build and test each separately."
+    },
+    pattern:{
+      how:"In CS, patterns save time. Recognizing that a problem matches a known pattern (sorting, searching, looping, decision-making) tells you which approach to use.",
+      steps:["Ask: have I solved a similar problem before? What approach worked?","Look at your data: does it need to be sorted? Filtered? Counted? Compared?","Identify the type of problem: is it a loop problem? A decision problem? A function problem?"],
+      example:"If you need to do something to every item in a list, that is a loop pattern. If you need to make a choice based on a condition, that is an if/else pattern. Recognizing the pattern first saves huge amounts of time."
+    },
+    abstract:{
+      how:"Abstraction in CS means thinking about WHAT a function does, not HOW it does it — focusing on the interface rather than the implementation.",
+      steps:["Before writing code, write in plain English what your program should do — ignore the syntax","Focus on inputs and outputs: what goes in? what comes out? Don't worry yet about the code in between","When debugging: abstract away working code and focus only on the part that is broken"],
+      example:"Before writing a function, write its 'contract': takes in [what], returns [what], does [what]. For example: 'checkGuess(guess, secret) — takes two numbers, returns a string saying too high, too low, or correct.'"
+    },
+    algo:{
+      how:"Every program is an algorithm. Writing pseudocode (plain English steps) before writing actual code is the most important algorithmic thinking habit.",
+      steps:["Write pseudocode first: describe every step in plain English without worrying about syntax","Test your algorithm on paper with a simple example before coding it","When debugging: trace your algorithm manually — what value does each variable hold at each step?"],
+      example:"Before writing a sorting algorithm: 'Step 1: Look at the first two items. Step 2: If the first is bigger, swap them. Step 3: Move to the next pair. Step 4: Repeat until no swaps happen.' Write this before you write any code."
+    },
+    path:"Start by decomposing your problem into the individual functions or steps your program needs. Use pattern recognition to identify whether you need loops, conditionals, functions, or data structures. Apply abstraction to define what each piece should do before writing it. Then think algorithmically: write pseudocode first, trace through it with an example, then write the actual code.",
+    first:"Before touching a keyboard, write in plain English exactly what your program needs to do — every step, in order, in your own words."
+  },
+  keywords:{
+    debug:{ steps_d:["Isolate the bug: which specific line or function is causing the problem?","Separate what the code IS doing from what you WANT it to do","Break the bug into: what is the symptom? what is the cause? what is the fix?"],eg_d:"If your program crashes, decompose: (1) What line causes the crash? (2) What value is wrong at that line? (3) Where did that wrong value come from?",
+      steps_al:["Step 1: Read the error message — it tells you the line and type of error","Step 2: Add console.log() before the broken line to see what values your variables hold","Step 3: Trace your code manually from the start to find where the value went wrong","Step 4: Fix, test, repeat"],eg_al:"The debugging algorithm: error message → isolate the line → trace backward → find the source → fix → test. Never randomly change code hoping something works." },
+    loop:{ steps_d:["Identify: what changes each iteration? (the variable)","Identify: when does the loop stop? (the condition)","Identify: what happens inside the loop? (the body)"],eg_d:"A while loop decomposes into three parts: (1) setup — initialize the counter, (2) condition — when to keep going, (3) body — what to do each time, (4) update — change the counter.",
+      steps_al:["Step 1: Initialize your counter/variable before the loop","Step 2: Write the condition (when should the loop keep going?)","Step 3: Write the body (what happens each time through?)","Step 4: Update your counter (or you'll loop forever!)"],eg_al:"Every counting loop: let i = 0; while (i < 5) { do something; i++; } — these four parts are always required." },
+    function:{ steps_d:["Identify: what information does the function need? (parameters)","Identify: what does the function produce? (return value)","Identify: what exact steps happen inside? (body)"],eg_d:"checkGuess(guess, secret) decomposes into: inputs (guess, secret) → comparison logic → return message. Three separate concerns.",
+      steps_a:["Think of the function as a black box: what goes in, what comes out?","Name your function based on WHAT it does, not HOW it does it","When calling a function, you should not need to know what is inside it — just what it returns"],eg_a:"When using Math.random(), you don't need to know how it generates random numbers — you just need to know: takes no input, returns a decimal between 0 and 1. That's abstraction." },
+    algorithm:{ steps_al:["Step 1: Write the algorithm in plain English (pseudocode)","Step 2: Trace through it manually with a small example (like 3 numbers or 2 steps)","Step 3: Check edge cases: what happens if the input is 0? Negative? Empty?","Step 4: Convert pseudocode to real code one step at a time"],eg_al:"Before coding a number-guessing game algorithm: Write: 'Pick a random number. Ask user for a guess. If too high, say too high. If too low, say too low. If correct, say correct and end.' Code AFTER this.",
+      steps_p:["Identify whether your problem is a search, sort, count, filter, or transform problem","Each problem type has a known algorithm pattern you can apply","Look at your data structure — array problems usually use loops, decision problems use if/else"],eg_p:"Sort problems → comparison-based loops. Search problems → check each item or use binary search. Count problems → loop with a counter. Recognizing the type tells you the algorithm." }
+  }
+}
+
+}; // end KB
+
+/* ══════════════════════════════════════════
+   STATE
+══════════════════════════════════════════ */
+let currentSubject = null;
+let history = JSON.parse(localStorage.getItem('ct_hist2')||'[]');
+
+/* ══════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════ */
+function show(page) {
+  ['page-welcome','page-input','page-loading','page-results'].forEach(p =>
+    document.getElementById('page-' + p.replace('page-','')).classList.add('hide'));
+  document.getElementById('page-'+page).classList.remove('hide');
+  window.scrollTo(0,0);
+}
+
+function pickSubject(key) {
+  currentSubject = key;
+  const s = SUBJ[key];
+  const banner = document.getElementById('ib');
+  banner.className = `ib ${s.c} fade-in`;
+  banner.innerHTML = `<span class="ib-icon">${s.icon}</span><div><div class="ib-name">${s.name}</div><div class="ib-desc">${s.desc}</div></div>`;
+  document.getElementById('tips-wrap').innerHTML =
+    '<span style="font-size:11px;font-weight:700;color:var(--text3);align-self:center;margin-right:4px">Try:</span>' +
+    s.tips.map(t=>`<div class="tip" onclick="useTip('${t.replace(/'/g,"\\'")}')">📌 ${t}</div>`).join('');
+  document.getElementById('ptarea').value = '';
+  onType();
+  show('input');
+}
+
+function useTip(t) {
+  const ta = document.getElementById('ptarea');
+  ta.value = t;
+  ta.focus();
+  onType();
+}
+
+function newProblem() {
+  document.getElementById('ptarea').value='';
+  onType();
+  show('input');
+}
+
+function onType() {
+  const v = document.getElementById('ptarea').value;
+  document.getElementById('cc').textContent = v.length;
+  const btn = document.getElementById('sbtn');
+  const txt = document.getElementById('sbtn-txt');
+  btn.disabled = v.trim().length < 12;
+  txt.textContent = v.trim().length < 12 ? '🧠 Describe your problem to continue' : '🧠 Solve with Computational Thinking';
+}
+
+/* ══════════════════════════════════════════
+   SOLVE — BUILT-IN CT ENGINE
+══════════════════════════════════════════ */
+function solve() {
+  const problem = document.getElementById('ptarea').value.trim();
+  if (!problem || problem.length < 12) return;
+  show('loading');
+  animateLoading();
+  setTimeout(() => {
+    const result = generateCT(currentSubject, problem);
+    saveHistory(problem, currentSubject);
+    renderResults(result, problem);
+    show('results');
+  }, 2800);
+}
+
+function animateLoading() {
+  const ids = ['ts1','ts2','ts3','ts4'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove('active','done');
+  });
+  let i = 0;
+  const iv = setInterval(() => {
+    if (i > 0) { document.getElementById(ids[i-1]).classList.remove('active'); document.getElementById(ids[i-1]).classList.add('done'); }
+    if (i < ids.length) { document.getElementById(ids[i]).classList.add('active'); i++; } else { clearInterval(iv); }
+  }, 600);
+}
+
+/* ══════════════════════════════════════════
+   CT ENGINE — keyword-aware breakdown
+══════════════════════════════════════════ */
+function generateCT(subjectKey, problem) {
+  const base = KB[subjectKey];
+  const def = base.defaults;
+  const kws = base.keywords || {};
+  const p = problem.toLowerCase();
+
+  // Find first matching keyword
+  let matched = null;
+  for (const [kw, data] of Object.entries(kws)) {
+    if (p.includes(kw)) { matched = { kw, data }; break; }
+  }
+
+  // Build four pillar objects, blending keyword specifics with defaults
+  const decomp = matched && matched.data.steps_d ? {
+    how: def.decomp.how,
+    steps: matched.data.steps_d,
+    example: matched.data.eg_d
+  } : def.decomp;
+
+  const pattern = matched && matched.data.steps_p ? {
+    how: def.pattern.how,
+    steps: matched.data.steps_p,
+    example: matched.data.eg_p
+  } : def.pattern;
+
+  const abstract = matched && matched.data.steps_a ? {
+    how: def.abstract.how,
+    steps: matched.data.steps_a,
+    example: matched.data.eg_a
+  } : def.abstract;
+
+  const algo = matched && matched.data.steps_al ? {
+    how: def.algo.how,
+    steps: matched.data.steps_al,
+    example: matched.data.eg_al
+  } : def.algo;
+
+  // Build the path and first step — inject the student's problem words where possible
+  const problemSnippet = problem.length > 60 ? problem.substring(0,57)+'…' : problem;
+
+  const path = buildPath(subjectKey, def, problemSnippet, matched);
+  const first = buildFirst(subjectKey, def, problem, matched);
+
+  return { decomp, pattern, abstract, algo, path, first };
+}
+
+function buildPath(sk, def, snippet, matched) {
+  if (matched) {
+    const kwLabel = matched.kw;
+    const paths = {
+      math: `For a problem involving ${kwLabel}, start by decomposing it into its individual mathematical steps. Look for patterns in the numbers or structure to identify which operation to use. Apply abstraction to remove confusing language and write a clean mathematical sentence. Finally, follow your step-by-step algorithm carefully, checking each step before moving to the next.`,
+      ela: `For this ${kwLabel} task, break it into its individual required parts before writing or analyzing anything. Look for patterns in how the text is structured or how your argument should be organized. Abstract to the single most important idea. Then follow a consistent process: plan first, draft second, revise third — never try to do all three at once.`,
+      sci: `For this ${kwLabel} challenge, first decompose the concept into its individual components and vocabulary. Look for patterns that connect it to science you already know. Abstract to the core scientific principle. Then follow the appropriate scientific process step by step — whether that is the scientific method, a lab procedure, or a calculation algorithm.`,
+      ss: `For this ${kwLabel} topic, break it into causes, key people, events, and effects — study each separately. Look for patterns connecting it to similar events in history. Abstract to the single most important driving force or idea. Then follow a systematic analysis process: context first, then claim, then evidence, then significance.`,
+      cs: `For this ${kwLabel} problem, start by decomposing it into the individual functions or steps your solution needs. Recognize the pattern type (loop, decision, function, data structure) to know which approach to use. Define what each piece should do before writing it. Then write pseudocode first, trace through it manually, and only then write actual code.`
+    };
+    return paths[sk] || def.path;
+  }
+  return def.path;
+}
+
+function buildFirst(sk, def, problem, matched) {
+  if (matched) {
+    const kw = matched.kw;
+    const firsts = {
+      math: `Open your notebook and write the problem as a math sentence — no words, just numbers and symbols. That single act of translating from words to math is your most important first step.`,
+      ela: `Write a one-sentence answer to the question: "What exactly am I being asked to do here?" Not the assignment text — your own understanding of the task. If you can't write that sentence clearly, that is your first obstacle.`,
+      sci: `Write down every vocabulary word in this problem that you are not 100% sure about. Look up each one and write a definition in your own words. Vocabulary gaps are almost always the root cause of science confusion.`,
+      ss: `Write down three things you already know about this topic — from class, reading, or memory. Your prior knowledge is your foundation. Start there before researching anything new.`,
+      cs: `Before touching a keyboard, draw a simple flowchart or write numbered steps describing what your program should do. If you can't describe it in plain English yet, you are not ready to code it.`
+    };
+    return firsts[sk] || def.first;
+  }
+  return def.first;
+}
+
+/* ══════════════════════════════════════════
+   RENDER RESULTS
+══════════════════════════════════════════ */
+const PILLAR_META = [
+  { key:'decomp',   label:'Decomposition',       subtitle:'Breaking it into pieces',       icon:'🔀', card:'card-d'  },
+  { key:'pattern',  label:'Pattern Recognition', subtitle:'Finding what repeats',           icon:'🔍', card:'card-p'  },
+  { key:'abstract', label:'Abstraction',          subtitle:'Focusing on what matters',      icon:'✂️', card:'card-a'  },
+  { key:'algo',     label:'Algorithmic Thinking', subtitle:'Building the step-by-step plan',icon:'📋', card:'card-al' }
+];
+
+function renderResults(data, problem) {
+  const subj = SUBJ[currentSubject];
+  const chip = document.getElementById('rh-chip');
+  chip.style.background = getComputedStyle(document.documentElement).getPropertyValue('--'+subj.c+'-lt').trim() || '#f3f4f6';
+  chip.style.color = '#111';
+  chip.textContent = subj.icon + ' ' + subj.name;
+  document.getElementById('rh-prob').textContent = problem;
+
+  const grid = document.getElementById('pgrid');
+  grid.innerHTML = '';
+
+  const pillarData = { decomp: data.decomp, pattern: data.pattern, abstract: data.abstract, algo: data.algo };
+
+  PILLAR_META.forEach((meta, idx) => {
+    const pd = pillarData[meta.key];
+    if (!pd) return;
+    const steps = Array.isArray(pd.steps) ? pd.steps : [];
+    const card = document.createElement('div');
+    card.className = `pc ${meta.card} slide-up s${idx+1}`;
+    card.innerHTML = `
+      <div class="pch">
+        <div class="pci">${meta.icon}</div>
+        <div>
+          <div class="pcpn">${meta.label}</div>
+          <div class="pctitle">${meta.subtitle}</div>
+        </div>
+      </div>
+      <div class="pcb">
+        <div class="pcex">${esc(pd.how)}</div>
+        <div class="pcsl">Action Steps</div>
+        <div class="pcsteps">
+          ${steps.map((s,i)=>`<div class="pcstep"><div class="pcnum">${i+1}</div><div>${esc(s)}</div></div>`).join('')}
+        </div>
+        <div class="pcel">Example</div>
+        <div class="pceg">${esc(pd.example||'')}</div>
+      </div>`;
+    grid.appendChild(card);
+  });
+
+  document.getElementById('sp-text').textContent = data.path;
+  document.getElementById('fs-txt').textContent = data.first;
+  document.getElementById('sp-card').classList.remove('hide');
+  document.getElementById('fs-card').classList.remove('hide');
+}
+
+/* ══════════════════════════════════════════
+   HISTORY
+══════════════════════════════════════════ */
+function saveHistory(problem, subject) {
+  const e = { prob: problem.substring(0,80), sub: subject };
+  history = [e, ...history.filter(h => h.prob !== e.prob)].slice(0,5);
+  localStorage.setItem('ct_hist2', JSON.stringify(history));
+  renderHistoryUI();
+}
+
+function renderHistoryUI() {
+  const sec = document.getElementById('history-section');
+  const chips = document.getElementById('hist-chips');
+  if (!history.length) { sec.classList.add('hide'); return; }
+  sec.classList.remove('hide');
+  chips.innerHTML = history.map(h => {
+    const s = SUBJ[h.sub];
+    return `<div class="hchip" onclick="reloadHist('${encodeURIComponent(h.prob)}','${h.sub}')" title="${esc(h.prob)}">${s?.icon||''} ${esc(h.prob.substring(0,38))}${h.prob.length>38?'…':''}</div>`;
+  }).join('');
+}
+
+function reloadHist(ep, sub) {
+  pickSubject(sub);
+  setTimeout(() => {
+    document.getElementById('ptarea').value = decodeURIComponent(ep);
+    onType();
+  }, 60);
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Init
+renderHistoryUI();
+</script>
+</body>
+</html>
